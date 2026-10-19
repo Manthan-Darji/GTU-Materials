@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTU WAD : Visual Viva & Lab Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        carbon: {
+                            950: '#0a0b0a',
+                            900: '#121413',
+                            850: '#181b19',
+                            800: '#222624',
+                            700: '#323835'
+                        },
+                        lime: {
+                            350: '#c8f542',
+                            450: '#a3e635'
+                        },
+                        ochre: {
+                            400: '#fb923c',
+                            500: '#f97316'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0b0a;
+            color: #e5e7eb;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121413;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #323835;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c8f542;
+        }
+        @keyframes packetMoveRight {
+            0% { left: 6%; opacity: 0; transform: scale(0.9); }
+            15% { opacity: 1; transform: scale(1); }
+            85% { opacity: 1; transform: scale(1); }
+            100% { left: 84%; opacity: 0; transform: scale(0.9); }
+        }
+        @keyframes packetMoveLeft {
+            0% { left: 84%; opacity: 0; transform: scale(0.9); }
+            15% { opacity: 1; transform: scale(1); }
+            85% { opacity: 1; transform: scale(1); }
+            100% { left: 6%; opacity: 0; transform: scale(0.9); }
+        }
+        .animate-packet-req {
+            animation: packetMoveRight 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .animate-packet-res {
+            animation: packetMoveLeft 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .dom-repaint-red {
+            animation: flashRed 0.9s ease-out;
+        }
+        .dom-patch-green {
+            animation: flashGreen 1.1s ease-out;
+        }
+        @keyframes flashRed {
+            0% { background-color: rgba(239, 68, 68, 0.8); transform: scale(1.03); }
+            100% { background-color: transparent; transform: scale(1); }
+        }
+        @keyframes flashGreen {
+            0% { background-color: rgba(163, 230, 53, 0.85); color: #0a0b0a; transform: scale(1.06); }
+            100% { background-color: rgba(163, 230, 53, 0.12); transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-lime-350 selection:text-carbon-950">
+
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 bg-carbon-900/95 backdrop-blur border-b border-carbon-800 px-4 lg:px-6 py-3">
+        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
+            <!-- Brand -->
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-lg bg-carbon-800 text-neutral-300 hover:text-white border border-carbon-700">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="w-9 h-9 rounded-lg bg-lime-350 text-carbon-950 flex items-center justify-center font-mono font-bold text-base">
+                    WAD
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-base sm:text-lg tracking-tight text-white">Sem-5 WAD Lab Studio</span>
+                        <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-carbon-800 text-lime-350 border border-carbon-700 font-semibold">BE05000281</span>
+                    </div>
+                    <p class="text-xs text-neutral-400 hidden sm:block"> GTU • 13 Past Papers IMP + 2024-25 Blind Spots • By Manthan D. </p>
+                </div>
+            </div>
+
+            <!-- Mode Tabs -->
+            <div class="flex items-center bg-carbon-950 p-1 rounded-lg border border-carbon-800">
+                <button onclick="switchMainView('chapters')" id="tabBtn-chapters" class="px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-lime-350 text-carbon-950">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>7-Ch Pointers</span>
+                </button>
+                <button onclick="switchMainView('labs')" id="tabBtn-labs" class="px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-neutral-400 hover:text-white">
+                    <i class="fa-solid fa-sliders text-teal-400"></i>
+                    <span>5 Visual Labs</span>
+                </button>
+                <button onclick="switchMainView('viva')" id="tabBtn-viva" class="px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-neutral-400 hover:text-white">
+                    <i class="fa-solid fa-bolt text-ochre-400"></i>
+                    <span>Viva Quiz</span>
+                </button>
+            </div>
+
+            <!-- Progress Tracker -->
+            <div class="hidden xl:flex items-center gap-3 bg-carbon-950 border border-carbon-800 px-3 py-1.5 rounded-lg">
+                <span class="text-xs font-mono text-neutral-400">DONE:</span>
+                <span id="masteredCountBadge" class="text-xs font-mono font-bold text-lime-350">0 / 26</span>
+                <div class="w-20 h-2 bg-carbon-800 rounded overflow-hidden">
+                    <div id="masteredProgressBar" class="h-full bg-lime-350 w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 max-w-[1600px] w-full mx-auto flex relative">
+
+        <!-- Left Sidebar -->
+        <aside id="sidebarNav" class="fixed lg:static inset-y-0 left-0 z-30 w-72 bg-carbon-900 border-r border-carbon-800 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out pt-16 lg:pt-0">
+            <!-- Priority Filter -->
+            <div class="p-3 border-b border-carbon-800 bg-carbon-950/60">
+                <div class="text-[11px] font-mono uppercase text-neutral-400 mb-2 flex items-center justify-between">
+                    <span>Filter Priority</span>
+                    <span id="activeFilterLabel" class="text-lime-350">Current Ch</span>
+                </div>
+                <div class="grid grid-cols-4 gap-1">
+                    <button onclick="setPriorityFilter('ALL')" id="filter-ALL" class="px-2 py-1.5 rounded text-[11px] font-mono font-bold bg-lime-350 text-carbon-950 text-center">ALL</button>
+                    <button onclick="setPriorityFilter('M.IMP')" id="filter-M.IMP" class="px-2 py-1.5 rounded text-[11px] font-mono font-bold bg-carbon-850 text-amber-300 border border-carbon-700 text-center">M.IMP</button>
+                    <button onclick="setPriorityFilter('BLINDSPOT')" id="filter-BLINDSPOT" class="px-2 py-1.5 rounded text-[11px] font-mono font-bold bg-carbon-850 text-ochre-400 border border-carbon-700 text-center">0-PYQ</button>
+                    <button onclick="setPriorityFilter('IMP')" id="filter-IMP" class="px-2 py-1.5 rounded text-[11px] font-mono font-bold bg-carbon-850 text-teal-300 border border-carbon-700 text-center">IMP</button>
+                </div>
+            </div>
+
+            <!-- Chapters List -->
+            <div class="p-2.5 overflow-y-auto flex-1 space-y-1" id="chapterListContainer"></div>
+
+            <!-- Lab Quick Links -->
+            <div class="p-3 border-t border-carbon-800 bg-carbon-950/80">
+                <div class="text-[11px] font-mono uppercase text-teal-400 mb-2">Interactive Labs</div>
+                <div class="space-y-1">
+                    <button onclick="openSpecificLab(1)" class="w-full text-left text-xs px-2.5 py-1.5 rounded bg-carbon-850 hover:bg-carbon-800 text-neutral-300 flex justify-between border border-carbon-800">
+                        <span>1. HTTP & Status Codes</span>
+                        <span class="font-mono text-[10px] text-lime-350">Ch 1,4</span>
+                    </button>
+                    <button onclick="openSpecificLab(2)" class="w-full text-left text-xs px-2.5 py-1.5 rounded bg-carbon-850 hover:bg-carbon-800 text-neutral-300 flex justify-between border border-carbon-800">
+                        <span>2. Flexbox & CSS Priority</span>
+                        <span class="font-mono text-[10px] text-lime-350">Ch 2</span>
+                    </button>
+                    <button onclick="openSpecificLab(3)" class="w-full text-left text-xs px-2.5 py-1.5 rounded bg-carbon-850 hover:bg-carbon-800 text-neutral-300 flex justify-between border border-carbon-800">
+                        <span>3. Regex & Event Loop</span>
+                        <span class="font-mono text-[10px] text-lime-350">Ch 3</span>
+                    </button>
+                    <button onclick="openSpecificLab(4)" class="w-full text-left text-xs px-2.5 py-1.5 rounded bg-carbon-850 hover:bg-carbon-800 text-neutral-300 flex justify-between border border-carbon-800">
+                        <span>4. Express Middleware</span>
+                        <span class="font-mono text-[10px] text-ochre-400">Ch 5</span>
+                    </button>
+                    <button onclick="openSpecificLab(5)" class="w-full text-left text-xs px-2.5 py-1.5 rounded bg-carbon-850 hover:bg-carbon-800 text-neutral-300 flex justify-between border border-carbon-800">
+                        <span>5. React VDOM & CORS</span>
+                        <span class="font-mono text-[10px] text-ochre-400">Ch 6,7</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Backdrop -->
+        <div id="mobileBackdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/70 z-20 hidden lg:hidden"></div>
+
+        <main class="flex-1 min-w-0 p-4 sm:p-6 overflow-y-auto">
+
+            <!-- VIEW 1: CHAPTER POINTERS -->
+            <div id="view-chapters" class="space-y-5">
+                <div id="chapterHeaderCard" class="rounded-xl bg-carbon-900 border border-carbon-800 p-5"></div>
+                <div id="topicsContainer" class="space-y-4"></div>
+            </div>
+
+            <!-- VIEW 2: 5 INTERACTIVE LABS -->
+            <div id="view-labs" class="hidden space-y-5">
+                <!-- Lab Selector Bar -->
+                <div class="bg-carbon-900 border border-carbon-800 rounded-xl p-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+                        <button onclick="selectLabTab(1)" id="labTabBtn-1" class="p-3 rounded-lg border text-left transition-all bg-lime-350 text-carbon-950 border-lime-350">
+                            <div class="text-[10px] font-mono uppercase font-bold">Lab 01 / Ch 1 & 4</div>
+                            <div class="font-bold text-xs sm:text-sm mt-0.5">HTTP & Status Codes</div>
+                        </button>
+                        <button onclick="selectLabTab(2)" id="labTabBtn-2" class="p-3 rounded-lg border text-left transition-all bg-carbon-850 border-carbon-800 text-neutral-400 hover:text-white">
+                            <div class="text-[10px] font-mono uppercase">Lab 02 / Ch 2</div>
+                            <div class="font-bold text-xs sm:text-sm mt-0.5">Flexbox & Specificity</div>
+                        </button>
+                        <button onclick="selectLabTab(3)" id="labTabBtn-3" class="p-3 rounded-lg border text-left transition-all bg-carbon-850 border-carbon-800 text-neutral-400 hover:text-white">
+                            <div class="text-[10px] font-mono uppercase">Lab 03 / Ch 3</div>
+                            <div class="font-bold text-xs sm:text-sm mt-0.5">Regex & Event Loop</div>
+                        </button>
+                        <button onclick="selectLabTab(4)" id="labTabBtn-4" class="p-3 rounded-lg border text-left transition-all bg-carbon-850 border-carbon-800 text-neutral-400 hover:text-white">
+                            <div class="text-[10px] font-mono uppercase">Lab 04 / Ch 5</div>
+                            <div class="font-bold text-xs sm:text-sm mt-0.5">Express Middleware</div>
+                        </button>
+                        <button onclick="selectLabTab(5)" id="labTabBtn-5" class="p-3 rounded-lg border text-left transition-all bg-carbon-850 border-carbon-800 text-neutral-400 hover:text-white">
+                            <div class="text-[10px] font-mono uppercase">Lab 05 / Ch 6 & 7</div>
+                            <div class="font-bold text-xs sm:text-sm mt-0.5">React VDOM & CORS</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- LAB 1: HTTP -->
+                <div id="labPanel-1" class="lab-panel bg-carbon-900 border border-carbon-800 rounded-xl p-5 space-y-5">
+                    <div class="border-b border-carbon-800 pb-3">
+                        <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">M.IMP (6x) + Ch 4 Blind Spot</span>
+                        <h3 class="text-lg font-bold text-white mt-1.5">Lab 1: HTTP Verbs, Query Params vs Body & Live Status Codes</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <div class="bg-carbon-950 p-4 rounded-lg border border-carbon-800">
+                            <label class="text-xs font-mono uppercase text-neutral-400 block mb-2">1. Pick HTTP Method</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="configureHttpLab('GET')" id="httpVerb-GET" class="py-2 px-3 rounded font-mono text-xs font-bold bg-lime-350 text-carbon-950">GET (Read)</button>
+                                <button onclick="configureHttpLab('POST')" id="httpVerb-POST" class="py-2 px-3 rounded font-mono text-xs font-bold bg-carbon-850 text-neutral-300 border border-carbon-700">POST (Create)</button>
+                                <button onclick="configureHttpLab('PUT')" id="httpVerb-PUT" class="py-2 px-3 rounded font-mono text-xs font-bold bg-carbon-850 text-neutral-300 border border-carbon-700">PUT (Update)</button>
+                                <button onclick="configureHttpLab('DELETE')" id="httpVerb-DELETE" class="py-2 px-3 rounded font-mono text-xs font-bold bg-carbon-850 text-neutral-300 border border-carbon-700">DELETE (Remove)</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-carbon-950 p-4 rounded-lg border border-carbon-800">
+                            <label class="text-xs font-mono uppercase text-neutral-400 block mb-2">2. Pick Server Scenario</label>
+                            <select id="httpScenarioSelect" onchange="updateHttpPreview()" class="w-full bg-carbon-900 border border-carbon-700 rounded px-3 py-2 text-xs text-white font-mono focus:outline-none">
+                                <option value="success">200 OK / 201 Created (Valid Request)</option>
+                                <option value="bad_request">400 Bad Request (Missing Field)</option>
+                                <option value="unauthorized">401 Unauthorized (Invalid JWT Token)</option>
+                                <option value="not_found">404 Not Found (Wrong URL / ID)</option>
+                                <option value="server_crash">500 Internal Error (DB Crashed)</option>
+                            </select>
+                            <ul class="text-[11px] text-neutral-400 mt-2 space-y-0.5 font-mono">
+                                <li>• GET sends data in URL Query (?sem=5)</li>
+                                <li>• POST/PUT sends data in Request Body</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-carbon-950 p-4 rounded-lg border border-carbon-800 flex flex-col justify-between">
+                            <div class="text-xs font-mono text-neutral-400">3. Test Packet Flow</div>
+                            <button onclick="fireHttpPacket()" class="w-full py-2.5 rounded-lg bg-lime-350 hover:bg-lime-450 text-carbon-950 font-bold text-xs font-mono uppercase tracking-wider transition-all">
+                                <i class="fa-solid fa-paper-plane mr-1"></i> Send HTTP Request
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="relative bg-carbon-950 border border-carbon-800 rounded-xl p-5 overflow-hidden">
+                        <div class="grid grid-cols-3 items-center gap-4 relative z-10">
+                            <div class="bg-carbon-900 border border-carbon-700 rounded-lg p-3 text-center">
+                                <div class="font-bold text-xs text-white">1. Browser Client</div>
+                                <div id="httpUrlPreview" class="text-[11px] font-mono text-lime-350 bg-carbon-950 p-1.5 rounded mt-1.5 truncate">GET /api/students?sem=5</div>
+                            </div>
+                            <div class="flex flex-col items-center justify-center relative h-20">
+                                <div class="w-full border-t border-dashed border-carbon-700"></div>
+                                <div id="httpAnimatedPacket" class="hidden absolute top-1 px-3 py-1 rounded text-xs font-mono font-bold z-20">PACKET</div>
+                                <div id="httpWireStatusText" class="text-[11px] font-mono text-neutral-400 mt-2 text-center">Ready</div>
+                            </div>
+                            <div class="bg-carbon-900 border border-carbon-700 rounded-lg p-3 text-center">
+                                <div class="font-bold text-xs text-white">2. Express Server + DB</div>
+                                <div id="httpServerActionText" class="text-[11px] font-mono text-neutral-400 bg-carbon-950 p-1.5 rounded mt-1.5">Idle</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-mono font-bold text-teal-400">HTTP REQUEST</span>
+                                <span id="httpDataLocationBadge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-carbon-800 text-neutral-300">Data: URL Query</span>
+                            </div>
+                            <pre id="httpRequestInspector" class="text-xs font-mono text-neutral-300 bg-carbon-900 p-3 rounded overflow-x-auto"></pre>
+                        </div>
+                        <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-mono font-bold text-lime-350">HTTP RESPONSE</span>
+                                <span id="httpStatusBadge" class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-350/20 text-lime-350 border border-lime-350/40">200 OK</span>
+                            </div>
+                            <pre id="httpResponseInspector" class="text-xs font-mono text-neutral-300 bg-carbon-900 p-3 rounded overflow-x-auto"></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LAB 2: CSS -->
+                <div id="labPanel-2" class="lab-panel hidden bg-carbon-900 border border-carbon-800 rounded-xl p-5 space-y-5">
+                    <div class="border-b border-carbon-800 pb-3">
+                        <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">M.IMP (6x) : Ch 2 Lab</span>
+                        <h3 class="text-lg font-bold text-white mt-1.5">Lab 2: Flexbox, Position (Relative vs Absolute) & Specificity Winner</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                        <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-4 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-xs text-teal-400 font-mono uppercase">A. Flexbox & Positioning</h4>
+                                <span id="cssActiveRuleText" class="text-[11px] font-mono text-neutral-400">display: flex;</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <div>
+                                    <label class="text-[10px] text-neutral-400 font-mono">justify-content</label>
+                                    <select id="flexJustify" onchange="updateCssPlayground()" class="mt-1 w-full bg-carbon-900 border border-carbon-700 rounded p-1.5 text-white font-mono text-xs">
+                                        <option value="flex-start">flex-start</option>
+                                        <option value="center">center</option>
+                                        <option value="space-between" selected>space-between</option>
+                                        <option value="space-around">space-around</option>
+                                        <option value="flex-end">flex-end</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-neutral-400 font-mono">align-items</label>
+                                    <select id="flexAlign" onchange="updateCssPlayground()" class="mt-1 w-full bg-carbon-900 border border-carbon-700 rounded p-1.5 text-white font-mono text-xs">
+                                        <option value="center" selected>center</option>
+                                        <option value="flex-start">flex-start</option>
+                                        <option value="flex-end">flex-end</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-neutral-400 font-mono">Box 2 Position</label>
+                                    <select id="box2Position" onchange="updateCssPlayground()" class="mt-1 w-full bg-carbon-900 border border-carbon-700 rounded p-1.5 text-lime-350 font-mono text-xs">
+                                        <option value="static">static</option>
+                                        <option value="relative">relative</option>
+                                        <option value="absolute">absolute</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="relative bg-carbon-900 border border-dashed border-carbon-700 rounded-lg h-48 p-4 flex" id="cssFlexStage" style="justify-content: space-between; align-items: center;">
+                                <span class="absolute top-1.5 left-2 text-[10px] font-mono text-neutral-400">.parent { position: relative; display: flex; }</span>
+                                <div class="w-16 h-16 rounded bg-carbon-800 border border-carbon-700 flex flex-col items-center justify-center text-white text-xs font-mono font-bold">Box 1</div>
+                                <div id="cssBox2" class="w-20 h-16 rounded bg-lime-350 text-carbon-950 flex flex-col items-center justify-center font-mono text-xs font-bold transition-all">
+                                    <span>Box 2</span>
+                                    <span id="box2Badge" class="text-[10px]">static</span>
+                                </div>
+                                <div class="w-16 h-16 rounded bg-carbon-800 border border-carbon-700 flex flex-col items-center justify-center text-white text-xs font-mono font-bold">Box 3</div>
+                            </div>
+                            <div id="positionExplanation" class="text-xs font-mono text-neutral-300 bg-carbon-900 p-2.5 rounded border border-carbon-800">
+                                • static: Sits in normal document flow.
+                            </div>
+                        </div>
+
+                        <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-4 space-y-3">
+                            <h4 class="font-bold text-xs text-ochre-400 font-mono uppercase">B. CSS Specificity Points (Highest Wins)</h4>
+                            <div class="space-y-2 text-xs font-mono">
+                                <label class="flex items-center justify-between p-2.5 rounded bg-carbon-900 border border-carbon-800 cursor-pointer">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="specTag" checked onchange="calculateSpecificityWinner()" class="w-4 h-4 accent-lime-350">
+                                        <span>1. Tag: button { color: Teal }</span>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded bg-carbon-800 text-neutral-400">1 pt</span>
+                                </label>
+                                <label class="flex items-center justify-between p-2.5 rounded bg-carbon-900 border border-carbon-800 cursor-pointer">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="specClass" checked onchange="calculateSpecificityWinner()" class="w-4 h-4 accent-lime-350">
+                                        <span>2. Class: .btn { color: Lime }</span>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded bg-carbon-800 text-lime-350">10 pts</span>
+                                </label>
+                                <label class="flex items-center justify-between p-2.5 rounded bg-carbon-900 border border-carbon-800 cursor-pointer">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="specId" onchange="calculateSpecificityWinner()" class="w-4 h-4 accent-lime-350">
+                                        <span>3. ID: #sub { color: Orange }</span>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded bg-carbon-800 text-ochre-400">100 pts</span>
+                                </label>
+                                <label class="flex items-center justify-between p-2.5 rounded bg-carbon-900 border border-carbon-800 cursor-pointer">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="specInline" onchange="calculateSpecificityWinner()" class="w-4 h-4 accent-lime-350">
+                                        <span>4. Inline: style="color: Red"</span>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded bg-carbon-800 text-red-400">1000 pts</span>
+                                </label>
+                            </div>
+                            <div class="p-3 rounded bg-carbon-900 border border-carbon-800 flex items-center justify-between">
+                                <div id="specWinnerExplanation" class="text-xs font-mono text-lime-350">Winner: .btn Class (10 pts)</div>
+                                <button id="specTargetBtn" class="px-4 py-2 rounded font-mono text-xs font-bold bg-lime-350 text-carbon-950">Target Button</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LAB 3: REGEX & ASYNC -->
+                <div id="labPanel-3" class="lab-panel hidden bg-carbon-900 border border-carbon-800 rounded-xl p-5 space-y-5">
+                    <div class="border-b border-carbon-800 pb-3">
+                        <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">M.IMP (7x #1 Question) : Ch 3 Lab</span>
+                        <h3 class="text-lg font-bold text-white mt-1.5">Lab 3: Live Regex Tester & Sync vs Async Event Loop</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                        <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-4 space-y-3">
+                            <h4 class="font-bold text-xs text-lime-350 font-mono uppercase">A. Regex Form Validator (.test)</h4>
+                            <div class="space-y-2.5">
+                                <div>
+                                    <div class="flex justify-between text-xs font-mono mb-1">
+                                        <span>Email</span>
+                                        <span class="text-neutral-400">/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/</span>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="text" id="regexEmailInput" oninput="runLiveRegexLab()" value="student@gtu.edu.in" class="w-full bg-carbon-900 border border-carbon-700 rounded px-3 py-1.5 text-xs font-mono text-white">
+                                        <span id="regexEmailStatus" class="absolute right-2.5 top-1.5 text-xs font-mono font-bold text-lime-350">VALID</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-mono mb-1">
+                                        <span>Mobile (10 digits, starts 6-9)</span>
+                                        <span class="text-neutral-400">/^[6-9]\d{9}$/</span>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="text" id="regexMobileInput" oninput="runLiveRegexLab()" value="9876543210" maxlength="12" class="w-full bg-carbon-900 border border-carbon-700 rounded px-3 py-1.5 text-xs font-mono text-white">
+                                        <span id="regexMobileStatus" class="absolute right-2.5 top-1.5 text-xs font-mono font-bold text-lime-350">VALID</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-mono mb-1">
+                                        <span>Password (6-16 chars, 1 digit, 1 special)</span>
+                                        <span class="text-neutral-400">/^(?=.*\d)(?=.*[@#$!%*?&]).{6,16}$/</span>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="text" id="regexPassInput" oninput="runLiveRegexLab()" value="Gtu@2026" class="w-full bg-carbon-900 border border-carbon-700 rounded px-3 py-1.5 text-xs font-mono text-white">
+                                        <span id="regexPassStatus" class="absolute right-2.5 top-1.5 text-xs font-mono font-bold text-lime-350">VALID</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-carbon-900 p-2.5 rounded border border-carbon-800 grid grid-cols-2 gap-1 text-[11px] font-mono text-neutral-300">
+                                <div>• ^ : Start of text</div>
+                                <div>• $ : End of text</div>
+                                <div>• \d : Any digit (0-9)</div>
+                                <div>• {9} : Repeat 9 times</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-4 space-y-3">
+                            <h4 class="font-bold text-xs text-teal-400 font-mono uppercase">B. Sync Blocking vs Async Fetch()</h4>
+                            <div class="flex gap-2">
+                                <button onclick="simulateEventLoop('sync')" class="flex-1 py-2 px-3 rounded bg-red-500/20 text-red-300 border border-red-500/40 text-xs font-mono font-bold">
+                                    Run Sync (Freezes UI)
+                                </button>
+                                <button onclick="simulateEventLoop('async')" class="flex-1 py-2 px-3 rounded bg-lime-350 text-carbon-950 text-xs font-mono font-bold">
+                                    Run Async Fetch()
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs">
+                                <div class="bg-carbon-900 p-2.5 rounded border border-carbon-800">
+                                    <div class="text-[10px] text-neutral-400 mb-1">1. Call Stack</div>
+                                    <div id="loopCallStack" class="h-16 flex items-center justify-center rounded bg-carbon-950 text-neutral-300 p-1 text-[11px]">Idle</div>
+                                </div>
+                                <div class="bg-carbon-900 p-2.5 rounded border border-carbon-800">
+                                    <div class="text-[10px] text-neutral-400 mb-1">2. Web API</div>
+                                    <div id="loopWebApi" class="h-16 flex items-center justify-center rounded bg-carbon-950 text-neutral-400 p-1 text-[11px]">Empty</div>
+                                </div>
+                                <div class="bg-carbon-900 p-2.5 rounded border border-carbon-800">
+                                    <div class="text-[10px] text-neutral-400 mb-1">3. Promise Queue</div>
+                                    <div id="loopQueue" class="h-16 flex items-center justify-center rounded bg-carbon-950 text-neutral-400 p-1 text-[11px]">Empty</div>
+                                </div>
+                            </div>
+                            <div id="loopConsoleOutput" class="bg-carbon-900 border border-carbon-800 rounded p-2.5 font-mono text-xs text-neutral-300 space-y-1 min-h-[70px]">
+                                <div>• Click a button above to test execution order.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LAB 4: EXPRESS MIDDLEWARE -->
+                <div id="labPanel-4" class="lab-panel hidden bg-carbon-900 border border-carbon-800 rounded-xl p-5 space-y-5">
+                    <div class="border-b border-carbon-800 pb-3">
+                        <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-ochre-500/20 text-ochre-400 border border-ochre-500/40">Ch 5 Zero-PYQ Blind Spot</span>
+                        <h3 class="text-lg font-bold text-white mt-1.5">Lab 4: Express Middleware Chain (req, res, next)</h3>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 bg-carbon-950 p-4 rounded-lg border border-carbon-800">
+                        <label class="flex items-center gap-2 cursor-pointer font-mono text-xs text-neutral-200">
+                            <input type="checkbox" id="mwAuthToggle" checked class="w-4 h-4 accent-lime-350">
+                            <span>Send Valid JWT Token Header (Authorization: Bearer token)</span>
+                        </label>
+                        <button onclick="runMiddlewarePipeline()" class="px-4 py-2 rounded bg-lime-350 text-carbon-950 font-mono font-bold text-xs uppercase">
+                            Run Request Pipeline
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5 font-mono">
+                        <div id="mwStage-1" class="p-3 rounded-lg bg-carbon-950 border border-carbon-800">
+                            <div class="text-[10px] text-neutral-400">STEP 1</div>
+                            <div class="font-bold text-xs text-white mt-1">express.json()</div>
+                            <div class="text-[10px] text-teal-400 mt-1">Parses req.body</div>
+                        </div>
+                        <div id="mwStage-2" class="p-3 rounded-lg bg-carbon-950 border border-carbon-800">
+                            <div class="text-[10px] text-neutral-400">STEP 2</div>
+                            <div class="font-bold text-xs text-white mt-1">Logger MW</div>
+                            <div class="text-[10px] text-lime-350 mt-1">Calls next()</div>
+                        </div>
+                        <div id="mwStage-3" class="p-3 rounded-lg bg-carbon-950 border border-carbon-800">
+                            <div class="text-[10px] text-neutral-400">STEP 3</div>
+                            <div class="font-bold text-xs text-white mt-1">Auth Guard</div>
+                            <div class="text-[10px] text-ochre-400 mt-1">Checks JWT</div>
+                        </div>
+                        <div id="mwStage-4" class="p-3 rounded-lg bg-carbon-950 border border-carbon-800">
+                            <div class="text-[10px] text-neutral-400">STEP 4</div>
+                            <div class="font-bold text-xs text-white mt-1">Route + DB</div>
+                            <div class="text-[10px] text-teal-400 mt-1">Model.create()</div>
+                        </div>
+                        <div id="mwStage-5" class="p-3 rounded-lg bg-carbon-950 border border-carbon-800">
+                            <div class="text-[10px] text-neutral-400">STEP 5</div>
+                            <div class="font-bold text-xs text-white mt-1">Response</div>
+                            <div class="text-[10px] text-lime-350 mt-1">res.json()</div>
+                        </div>
+                    </div>
+
+                    <div id="mwConsoleLog" class="bg-carbon-950 border border-carbon-800 rounded-lg p-3.5 font-mono text-xs text-neutral-300 space-y-1">
+                        <div>• Toggle JWT token above and click Run Request Pipeline.</div>
+                    </div>
+                </div>
+
+                <!-- LAB 5: REACT VDOM & CORS -->
+                <div id="labPanel-5" class="lab-panel hidden bg-carbon-900 border border-carbon-800 rounded-xl p-5 space-y-5">
+                    <div class="border-b border-carbon-800 pb-3">
+                        <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-ochre-500/20 text-ochre-400 border border-ochre-500/40">Ch 6 & 7 Zero-PYQ Blind Spot</span>
+                        <h3 class="text-lg font-bold text-white mt-1.5">Lab 5: React Virtual DOM Diffing & CORS Fix</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                        <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-4 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-xs text-lime-350 font-mono uppercase">A. Real DOM vs Virtual DOM</h4>
+                                <button onclick="triggerReactStateUpdate()" class="px-3 py-1.5 rounded bg-lime-350 text-carbon-950 font-mono text-xs font-bold">
+                                    setCount(count + 1)
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 text-center font-mono text-xs">
+                                <div class="bg-carbon-900 p-3 rounded border border-carbon-800 space-y-1.5">
+                                    <div class="text-red-400 font-bold">Real DOM (Slow)</div>
+                                    <div class="real-dom-node p-1.5 rounded border border-carbon-700">&lt;App&gt;</div>
+                                    <div class="real-dom-node p-1.5 rounded border border-carbon-700">&lt;Header /&gt;</div>
+                                    <div class="real-dom-node p-1.5 rounded border border-red-500/50 font-bold">Count: <span class="vdom-count-val">0</span></div>
+                                    <div class="text-[10px] text-neutral-400">Repaints ALL nodes</div>
+                                </div>
+                                <div class="bg-carbon-900 p-3 rounded border border-carbon-800 space-y-1.5">
+                                    <div class="text-lime-350 font-bold">Virtual DOM (Fast)</div>
+                                    <div class="p-1.5 rounded border border-carbon-700 opacity-50">&lt;App&gt; (Skipped)</div>
+                                    <div class="p-1.5 rounded border border-carbon-700 opacity-50">&lt;Header /&gt; (Skipped)</div>
+                                    <div id="vdomTargetNode" class="p-1.5 rounded border border-lime-350 font-bold text-lime-350">Count: <span class="vdom-count-val">0</span></div>
+                                    <div class="text-[10px] text-lime-350">Patches ONLY 1 node</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-4 space-y-3">
+                            <h4 class="font-bold text-xs text-teal-400 font-mono uppercase">B. CORS Policy (Port 3000 to Port 5000)</h4>
+                            <label class="bg-carbon-900 p-3 rounded border border-carbon-800 flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-mono text-neutral-200">Enable app.use(cors()) on Express Server</span>
+                                <input type="checkbox" id="corsToggleCheckbox" onchange="runCorsSimulation()" class="w-4 h-4 accent-lime-350">
+                            </label>
+                            <div id="corsConsoleBox" class="p-3.5 rounded border font-mono text-xs space-y-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: RAPID VIVA DECK -->
+            <div id="view-viva" class="hidden space-y-5">
+                <div class="bg-carbon-900 border border-carbon-800 rounded-xl p-5 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-ochre-500/20 text-ochre-400 font-bold">Oral Exam Mode</span>
+                        <h2 class="text-xl font-bold text-white mt-1">Rapid-Fire Viva Flashcards (Point-Wise)</h2>
+                    </div>
+                    <div class="flex items-center gap-2 font-mono text-xs">
+                        <button onclick="prevVivaCard()" class="px-3.5 py-2 rounded bg-carbon-800 hover:bg-carbon-700 text-white">Prev</button>
+                        <button onclick="randomVivaCard()" class="px-3.5 py-2 rounded bg-lime-350 text-carbon-950 font-bold">Shuffle Random</button>
+                        <button onclick="nextVivaCard()" class="px-3.5 py-2 rounded bg-carbon-800 hover:bg-carbon-700 text-white">Next</button>
+                    </div>
+                </div>
+                <div id="vivaCardContainer" class="max-w-4xl mx-auto"></div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const chaptersData = [
+            {
+                id: 1,
+                title: "Ch 1: Intro to Web Tech",
+                hours: "2 Hrs",
+                weightage: "CO-1 (20%)",
+                summary: "Client-Server model, Static vs Dynamic websites, Frontend vs Backend roles, and Banking web security.",
+                linkedLab: 1,
+                topics: [
+                    {
+                        id: "c1-t1",
+                        title: "Client-Side vs Server-Side Scripting",
+                        priority: "M.IMP",
+                        freq: "8x Asked (3-4M)",
+                        analogyPoints: [
+                            "Client-Side is like a waiter checking your menu order right at your table.",
+                            "Server-Side is like a chef cooking inside a locked kitchen connected to the food vault."
+                        ],
+                        howItWorks: [
+                            "Client-Side runs inside the user's browser (HTML, CSS, JavaScript).",
+                            "Server-Side runs on a remote server (Node.js, Python, PHP).",
+                            "Client source code is visible to everyone via browser Inspect Element.",
+                            "Server source code and database passwords stay hidden from users.",
+                            "Client handles fast UI updates; Server handles DB queries and security."
+                        ],
+                        codeSnippet: `// Client-Side (Browser)
+if (pin.length < 4) showMsg("Invalid PIN");
+
+// Server-Side (Node.js)
+app.post('/auth', (req, res) => db.verify(req.body.pin));`,
+                        vivaPoints: [
+                            "Client-side scripts run in the browser for fast UI updates and form checks.",
+                            "Server-side scripts run on the backend server to query databases and protect secret logic."
+                        ],
+                        examinerTrap: {
+                            q: "If we validate a form in browser JS, can we skip server validation?",
+                            a: "No. Attackers can turn off browser JS or use Postman to bypass client checks."
+                        }
+                    },
+                    {
+                        id: "c1-t2",
+                        title: "Client-Server Architecture (2-Tier vs 3-Tier)",
+                        priority: "IMP",
+                        freq: "2x Asked (3-4M)",
+                        analogyPoints: [
+                            "Customer (Browser) places an order with the Manager (Application Server).",
+                            "Manager fetches items from the Warehouse (Database) and returns the bill."
+                        ],
+                        howItWorks: [
+                            "Tier 1 (Client / Presentation): Browser renders UI and sends HTTP requests.",
+                            "Tier 2 (Application Server): Node.js / Express runs business logic.",
+                            "Tier 3 (Database Server): MongoDB or MySQL stores persistent data.",
+                            "2-Tier connects Client directly to DB; 3-Tier adds a secure Server layer in between."
+                        ],
+                        codeSnippet: `[Browser Client] --(1. HTTP Req)--> [Node Server] --(2. Query)--> [Database]
+[Browser Client] <--(4. HTTP Res)-- [Node Server] <--(3. Data)--- [Database]`,
+                        vivaPoints: [
+                            "Client requests data via HTTP, and the Server processes rules before querying the Database.",
+                            "3-Tier architecture separates UI, Business Logic, and Data for high security and scaling."
+                        ],
+                        examinerTrap: {
+                            q: "Why not connect React directly to MySQL without a backend server?",
+                            a: "It would expose database passwords to anyone opening Chrome DevTools."
+                        }
+                    },
+                    {
+                        id: "c1-t3",
+                        title: "Static vs Dynamic Websites & Banking Role",
+                        priority: "IMP",
+                        freq: "Syllabus CO-1",
+                        analogyPoints: [
+                            "Static website is a printed poster: everyone sees the exact same text.",
+                            "Dynamic website is an ATM screen: it shows your personal bank balance after login."
+                        ],
+                        howItWorks: [
+                            "Static sites send pre-built HTML/CSS files with no database used.",
+                            "Dynamic sites generate custom data per user using a Backend and Database.",
+                            "Static is fast and cheap for portfolios; Dynamic powers e-commerce and banking.",
+                            "In Banking: enables real-time UPI transfers, OTP checks, and HTTPS encryption."
+                        ],
+                        codeSnippet: `Static  : GET /about.html -> Returns same file to all users
+Dynamic : GET /balance    -> Queries DB for logged-in user_id`,
+                        vivaPoints: [
+                            "Static websites show identical pre-saved HTML to all visitors without a database.",
+                            "Dynamic websites generate live, user-specific content from a backend server and database."
+                        ],
+                        examinerTrap: {
+                            q: "If a static HTML page has a moving JS clock, is it a Dynamic Website?",
+                            a: "No. It is still static because no server or database generates custom data."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "Ch 2: HTML & CSS Basics",
+                hours: "9 Hrs",
+                weightage: "CO-2 (20%)",
+                summary: "HTML5 tags, Rowspan/Colspan tables, Forms, CSS Types, Specificity, Flexbox, Positioning, Media Queries, and Bootstrap.",
+                linkedLab: 2,
+                topics: [
+                    {
+                        id: "c2-t1",
+                        title: "CSS Types (Inline, Internal, External) & ID vs Class",
+                        priority: "M.IMP",
+                        freq: "6x Asked (7M)",
+                        analogyPoints: [
+                            "External CSS is the rulebook for the whole college.",
+                            "Internal CSS is a notice for just one room; Inline CSS is a sticker on one student."
+                        ],
+                        howItWorks: [
+                            "Inline CSS: Uses style attribute on one HTML tag (Highest priority: 1000 pts).",
+                            "Internal CSS: Written inside <style> tag in HTML <head> for a single page.",
+                            "External CSS: Separate .css file linked via <link> tag (Best for multi-page reuse).",
+                            "ID Selector (#id): Targets 1 unique element per page (100 pts).",
+                            "Class Selector (.class): Reusable across multiple elements (10 pts)."
+                        ],
+                        codeSnippet: `<link rel="stylesheet" href="app.css"> <!-- External -->
+<style>
+  #logo { width: 100px; } /* ID: 1 unique element */
+  .card { padding: 12px; } /* Class: Many elements */
+</style>
+<div id="logo" class="card" style="color:red">Hi</div> <!-- Inline wins -->`,
+                        vivaPoints: [
+                            "External CSS styles an entire site via a .css file, Internal styles one page, and Inline styles one tag.",
+                            "Priority order is Inline (1000) > ID # (100) > Class . (10) > Tag (1)."
+                        ],
+                        examinerTrap: {
+                            q: "How can an External CSS rule beat an Inline style attribute?",
+                            a: "By adding !important to the External CSS property."
+                        }
+                    },
+                    {
+                        id: "c2-t2",
+                        title: "HTML Tables with Rowspan & Colspan",
+                        priority: "M.IMP",
+                        freq: "5x Asked (7M)",
+                        analogyPoints: [
+                            "colspan merges boxes left-to-right across a single row.",
+                            "rowspan merges boxes top-to-bottom across multiple rows."
+                        ],
+                        howItWorks: [
+                            "<table> wraps rows (<tr>), headers (<th>), and data cells (<td>).",
+                            "colspan='2' makes 1 cell take the width of 2 columns horizontally.",
+                            "rowspan='2' makes 1 cell stretch down across 2 rows vertically.",
+                            "When using rowspan='2', remove 1 <td> from the next <tr> below it."
+                        ],
+                        codeSnippet: `<table border="1">
+  <tr>
+    <th rowspan="2">ID</th>
+    <th colspan="2">Marks</th>
+  </tr>
+  <tr>
+    <th>Theory</th><th>Lab</th>
+  </tr>
+</table>`,
+                        vivaPoints: [
+                            "colspan merges table cells horizontally across columns in the same row.",
+                            "rowspan merges cells vertically downward, requiring fewer <td> tags in the next row."
+                        ],
+                        examinerTrap: {
+                            q: "Why do extra broken cells stick out on the right of a table?",
+                            a: "Because you forgot to delete the extra <td> tag in the row below a rowspan."
+                        }
+                    },
+                    {
+                        id: "c2-t3",
+                        title: "HTML Form Controls & Semantic HTML5 Tags",
+                        priority: "M.IMP",
+                        freq: "5x Asked (7M)",
+                        analogyPoints: [
+                            "Radio buttons let you pick ONLY ONE option (like gender or semester).",
+                            "Checkboxes let you pick MULTIPLE options (like skills or hobbies)."
+                        ],
+                        howItWorks: [
+                            "<form action='/url' method='POST'> sends user inputs to the server.",
+                            "Every input needs a 'name' attribute to act as the key in server payload.",
+                            "Radio buttons must share the exact same name='group' to allow only one choice.",
+                            "Semantic tags (<header>, <nav>, <main>, <footer>) describe meaning for SEO and screen readers.",
+                            "Non-semantic tags (<div>, <span>) are generic boxes with no meaning."
+                        ],
+                        codeSnippet: `<form action="/save" method="POST">
+  <input type="text" name="user" required>
+  <input type="radio" name="sem" value="5" checked> Sem 5
+  <input type="radio" name="sem" value="6"> Sem 6
+  <input type="checkbox" name="lang" value="JS"> JS
+  <select name="city"><option>Ahmedabad</option></select>
+</form>`,
+                        vivaPoints: [
+                            "Forms collect user data using input, select, and textarea tags identified by the name attribute.",
+                            "Semantic tags like header, nav, and article improve SEO and accessibility over plain div tags."
+                        ],
+                        examinerTrap: {
+                            q: "How do you stop a user from selecting two radio buttons at once?",
+                            a: "Give both radio inputs the exact same name attribute."
+                        }
+                    },
+                    {
+                        id: "c2-t4",
+                        title: "CSS Positioning (Relative vs Absolute) & Flexbox",
+                        priority: "M.IMP",
+                        freq: "4x Asked (4M)",
+                        analogyPoints: [
+                            "Relative nudges your chair slightly while keeping your table spot reserved.",
+                            "Absolute floats you to the corner of the room and others take your seat."
+                        ],
+                        howItWorks: [
+                            "position: relative moves an element from its normal spot while keeping its space reserved.",
+                            "position: absolute removes it from flow and pins it inside the nearest positioned parent.",
+                            "z-index controls which overlapping positioned element sits on top.",
+                            "Flexbox (display: flex) aligns items in 1D (row or column).",
+                            "justify-content aligns along Main Axis; align-items aligns along Cross Axis."
+                        ],
+                        codeSnippet: `.parent {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.badge { position: absolute; top: 0; right: 0; z-index: 10; }`,
+                        vivaPoints: [
+                            "Relative offsets an element from its own spot, while Absolute pins it to a positioned parent.",
+                            "Flexbox aligns items along the main axis with justify-content and cross axis with align-items."
+                        ],
+                        examinerTrap: {
+                            q: "Why does z-index: 999 not work on a normal div?",
+                            a: "z-index only works if position is relative, absolute, fixed, or sticky (not static)."
+                        }
+                    },
+                    {
+                        id: "c2-t5",
+                        title: "Responsive Media Queries & Bootstrap 12-Col Grid",
+                        priority: "IMP",
+                        freq: "4x Asked (3-4M)",
+                        analogyPoints: [
+                            "Media queries act like liquid water reshaping to fit a phone or laptop screen.",
+                            "Bootstrap slices every row into 12 equal vertical strips."
+                        ],
+                        howItWorks: [
+                            "Viewport meta tag ensures mobile browsers scale pages to device-width.",
+                            "@media (max-width: 768px) applies CSS rules only on smaller screens.",
+                            "Bootstrap uses a 12-column grid: .container > .row > .col-*.",
+                            "col-12 takes full width on phone; col-md-4 takes 1/3rd width (4 of 12) on desktop."
+                        ],
+                        codeSnippet: `<div class="container">
+  <div class="row">
+    <div class="col-12 col-md-4">Col 1</div>
+    <div class="col-12 col-md-4">Col 2</div>
+    <div class="col-12 col-md-4">Col 3</div>
+  </div>
+</div>`,
+                        vivaPoints: [
+                            "Media queries apply conditional CSS rules based on screen width breakpoints.",
+                            "Bootstrap uses a 12-column flexbox grid (col-sm, col-md, col-lg) for mobile-first layouts."
+                        ],
+                        examinerTrap: {
+                            q: "Why does Bootstrap use 12 columns instead of 10?",
+                            a: "12 divides evenly by 1, 2, 3, 4, and 6 for flexible layouts."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "Ch 3: JavaScript & Async Web",
+                hours: "10 Hrs",
+                weightage: "CO-3 (20%)",
+                summary: "Regex validation (#1 M.IMP), DOM Manipulation, Events, LocalStorage, Promises, and Fetch API.",
+                linkedLab: 3,
+                topics: [
+                    {
+                        id: "c3-t1",
+                        title: "Regex Login & Registration Form Validation",
+                        priority: "M.IMP",
+                        freq: "7x Asked (7M - #1 Topic)",
+                        analogyPoints: [
+                            "Regex is a stencil cutout that checks if text matches an exact pattern.",
+                            "If the text does not fit, .test() returns false and stops form submission."
+                        ],
+                        howItWorks: [
+                            "^ matches the start of string; $ matches the end of string.",
+                            "\\d matches any digit (0-9); \\w matches letters, digits, and underscore.",
+                            "Indian Mobile Regex: /^[6-9]\\d{9}$/ (Starts with 6-9, followed by 9 digits).",
+                            "Email Regex: /^[\\w.-]+@[a-zA-Z\\d.-]+\\.[a-zA-Z]{2,}$/.",
+                            "pattern.test(str) returns true if valid, false if invalid."
+                        ],
+                        codeSnippet: `function validate(e) {
+  const mobOk = /^[6-9]\\d{9}$/.test(mobileInput.value);
+  const mailOk = /^[\\w.-]+@[a-zA-Z\\d.-]+\\.[a-zA-Z]{2,}$/.test(emailInput.value);
+  if (!mobOk || !mailOk) {
+    e.preventDefault(); // Stops form submit
+    return false;
+  }
+}`,
+                        vivaPoints: [
+                            "Regex validates user inputs like email and mobile using pattern.test(value) before form submit.",
+                            "Anchors ^ and $ force the entire string to match from beginning to end."
+                        ],
+                        examinerTrap: {
+                            q: "What happens if you omit ^ and $ in /\\d{10}/?",
+                            a: "Strings like 'abc9876543210xyz' will falsely pass because 10 digits exist inside."
+                        }
+                    },
+                    {
+                        id: "c3-t2",
+                        title: "DOM Manipulation, Events & JS Popup Boxes",
+                        priority: "M.IMP",
+                        freq: "6x Asked (7M)",
+                        analogyPoints: [
+                            "DOM turns HTML tags into a live tree of objects that JS can edit on the fly.",
+                            "Events wait for user actions like clicks, key presses, or mouse hover."
+                        ],
+                        howItWorks: [
+                            "Select nodes: document.getElementById('id') or document.querySelector('.cls').",
+                            "Edit nodes: element.textContent = 'New' or element.style.color = 'lime'.",
+                            "Create nodes: document.createElement('li') and parent.appendChild(li).",
+                            "Events: element.addEventListener('click', fn) or 'mouseover', 'keyup'.",
+                            "3 Native Popups: alert() shows message, confirm() returns true/false, prompt() returns input text."
+                        ],
+                        codeSnippet: `const btn = document.getElementById("btn");
+btn.addEventListener("mouseover", () => {
+  btn.textContent = "Hovered!";
+  btn.style.backgroundColor = "lime";
+});`,
+                        vivaPoints: [
+                            "DOM represents HTML as an object tree so JS can add, edit, or delete elements without reloading.",
+                            "addEventListener attaches callback functions to user actions like click, keyup, and mouseover."
+                        ],
+                        examinerTrap: {
+                            q: "Why is textContent safer than innerHTML?",
+                            a: "innerHTML executes <script> tags (XSS risk), while textContent inserts plain text safely."
+                        }
+                    },
+                    {
+                        id: "c3-t3",
+                        title: "Sync vs Async JS, Callbacks, Promises & Fetch API",
+                        priority: "BLINDSPOT",
+                        freq: "3x IMP + New Blind Spot",
+                        analogyPoints: [
+                            "Synchronous is waiting frozen at a counter until your food is cooked.",
+                            "Asynchronous is taking a token buzzer (Promise) and sitting down while it cooks."
+                        ],
+                        howItWorks: [
+                            "Synchronous runs line-by-line and blocks the browser UI during slow tasks.",
+                            "Asynchronous runs slow network tasks in the background without freezing the UI.",
+                            "Callback is a function passed to another function to run later.",
+                            "Promise has 3 states: Pending, Fulfilled (.then), and Rejected (.catch).",
+                            "fetch(url) is a Promise-based API to make HTTP calls using async/await."
+                        ],
+                        codeSnippet: `async function getUsers() {
+  try {
+    const res = await fetch("https://api.site.com/users");
+    const data = await res.json();
+    console.log(data);
+  } catch (err) {
+    console.error(err);
+  }
+}`,
+                        vivaPoints: [
+                            "Async JS runs slow network calls in the background so the single-threaded browser never freezes.",
+                            "fetch() returns a Promise with Pending, Fulfilled, or Rejected states handled via async/await."
+                        ],
+                        examinerTrap: {
+                            q: "Why do we write await twice when using fetch()?",
+                            a: "First await waits for HTTP headers; second await (res.json()) reads and parses the body stream."
+                        }
+                    },
+                    {
+                        id: "c3-t4",
+                        title: "Browser Local Storage vs Session Storage",
+                        priority: "BLINDSPOT",
+                        freq: "0x PYQ - Ch 3 Addition",
+                        analogyPoints: [
+                            "localStorage is permanent marker: stays even after closing the browser.",
+                            "sessionStorage is whiteboard marker: erases as soon as you close the tab."
+                        ],
+                        howItWorks: [
+                            "Stores key-value pairs inside the browser (~5MB limit).",
+                            "localStorage persists forever until manually deleted.",
+                            "sessionStorage clears automatically when the browser tab closes.",
+                            "Only stores strings: use JSON.stringify() to save objects and JSON.parse() to read."
+                        ],
+                        codeSnippet: `// Save object
+localStorage.setItem("user", JSON.stringify({ id: 7 }));
+// Read object
+const u = JSON.parse(localStorage.getItem("user"));
+// Delete item
+localStorage.removeItem("user");`,
+                        vivaPoints: [
+                            "localStorage saves string data permanently in the browser, while sessionStorage clears on tab close.",
+                            "Objects must be converted to strings using JSON.stringify() before saving."
+                        ],
+                        examinerTrap: {
+                            q: "Are localStorage items sent to the server on every HTTP request like Cookies?",
+                            a: "No. localStorage stays strictly inside the browser unless manually attached to a request."
+                        }
+                    },
+                    {
+                        id: "c3-t5",
+                        title: "JS Logic Programs: Prime & Fibonacci",
+                        priority: "M.IMP",
+                        freq: "6x Asked (7M Code)",
+                        analogyPoints: [
+                            "Prime check tests if any number from 2 to sqrt(n) divides n evenly.",
+                            "Fibonacci adds the previous two numbers to get the next number."
+                        ],
+                        howItWorks: [
+                            "Prime Number: Loop i from 2 to Math.sqrt(n). If n % i === 0, return false.",
+                            "Numbers <= 1 are not prime; 2 is the only even prime.",
+                            "Fibonacci: Start with a = 0, b = 1. Next term c = a + b, then shift a = b, b = c."
+                        ],
+                        codeSnippet: `function isPrime(n) {
+  if (n <= 1) return false;
+  for (let i = 2; i <= Math.sqrt(n); i++) {
+    if (n % i === 0) return false;
+  }
+  return true;
+}`,
+                        vivaPoints: [
+                            "Prime check loops from 2 to Math.sqrt(n) using the modulo operator (%) to test divisibility.",
+                            "Checking up to sqrt(n) reduces time complexity from O(n) to O(sqrt(n))."
+                        ],
+                        examinerTrap: {
+                            q: "What is the difference between == and === in JavaScript?",
+                            a: "== checks only value with type conversion; === checks both value and data type strictly."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "Ch 4: APIs & HTTP Protocol",
+                hours: "6 Hrs",
+                weightage: "CO-3 & CO-4 (20%)",
+                summary: "HTTP Request/Response, Status Codes, GET vs POST, Query Params vs Request Body, and JSON vs XML.",
+                linkedLab: 1,
+                topics: [
+                    {
+                        id: "c4-t1",
+                        title: "HTTP Request-Response & Status Codes",
+                        priority: "M.IMP",
+                        freq: "6x Asked (7M)",
+                        analogyPoints: [
+                            "HTTP Request is a letter with an action stamp (GET/POST) and return address (Headers).",
+                            "Status Code is a 3-digit stamp showing if the server succeeded (200) or failed (404/500)."
+                        ],
+                        howItWorks: [
+                            "HTTP is a stateless protocol (Server does not remember past requests by default).",
+                            "Request has 3 parts: Request Line (Method + URL), Headers, and Body.",
+                            "Response has 3 parts: Status Code, Response Headers, and Response Body.",
+                            "Status Codes: 1xx Info, 2xx Success (200 OK, 201 Created), 3xx Redirect.",
+                            "Errors: 4xx Client Error (400 Bad, 401 Unauth, 404 Not Found), 5xx Server Error (500)."
+                        ],
+                        codeSnippet: `200 OK           : Request succeeded
+201 Created      : New record created (POST)
+400 Bad Request  : Invalid input from client
+401 Unauthorized : Missing or invalid login token
+404 Not Found    : URL or resource does not exist
+500 Server Error : Backend code or DB crashed`,
+                        vivaPoints: [
+                            "HTTP is a stateless request-response protocol using Methods, Headers, Body, and 3-digit Status Codes.",
+                            "2xx means success, 4xx means client mistake, and 5xx means server failure."
+                        ],
+                        examinerTrap: {
+                            q: "Since HTTP is stateless, how does a website remember you are logged in?",
+                            a: "By sending a JWT token, Session ID, or Cookie inside the HTTP Headers of every request."
+                        }
+                    },
+                    {
+                        id: "c4-t2",
+                        title: "CRUD Verbs (GET, POST, PUT, DELETE) & Query vs Body",
+                        priority: "BLINDSPOT",
+                        freq: "3x IMP + Ch 4 Blind Spot",
+                        analogyPoints: [
+                            "Query Params (?sem=5) are written on the outside of an envelope (visible in URL).",
+                            "Request Body is locked inside the envelope (hidden from URL, used in POST/PUT)."
+                        ],
+                        howItWorks: [
+                            "GET (Read): Fetches data. Uses URL Query Params (?city=Surat). Bookmarkable & cached.",
+                            "POST (Create): Sends new data inside Request Body (req.body). Not visible in URL.",
+                            "PUT (Update): Replaces existing record using URL ID (:id) + Request Body.",
+                            "DELETE (Delete): Removes record by ID (/users/42)."
+                        ],
+                        codeSnippet: `POST   /students     -> Create (Data in req.body)
+GET    /students?s=5 -> Read   (Filter in req.query)
+PUT    /students/12  -> Update (ID in req.params + req.body)
+DELETE /students/12  -> Delete (ID in req.params)`,
+                        vivaPoints: [
+                            "REST CRUD maps POST to Create, GET to Read, PUT to Update, and DELETE to Delete.",
+                            "Query parameters pass visible URL filters in GET, while Request Body carries JSON payloads in POST/PUT."
+                        ],
+                        examinerTrap: {
+                            q: "Is POST secure without HTTPS just because data is not in the URL?",
+                            a: "No. Without HTTPS encryption, hackers on the network can still read the plain-text POST body."
+                        }
+                    },
+                    {
+                        id: "c4-t3",
+                        title: "JSON vs XML Format",
+                        priority: "IMP",
+                        freq: "3x Asked (3-4M)",
+                        analogyPoints: [
+                            "XML wraps data in heavy opening and closing tags like wooden crates.",
+                            "JSON uses light key-value pairs that JavaScript reads instantly."
+                        ],
+                        howItWorks: [
+                            "JSON stands for JavaScript Object Notation.",
+                            "Data is written as \"key\": value pairs; keys MUST use double quotes.",
+                            "Supports Strings, Numbers, Booleans, Arrays [], Objects {}, and null.",
+                            "Faster and smaller than XML because it has no closing tags.",
+                            "JSON.parse(str) converts JSON string to JS object; JSON.stringify(obj) converts to string."
+                        ],
+                        codeSnippet: `{
+  "rollNo": 101,
+  "name": "Aarav",
+  "passed": true,
+  "skills": ["Node", "React"]
+}`,
+                        vivaPoints: [
+                            "JSON is a lightweight text format using double-quoted key-value pairs for API data transfer.",
+                            "It is smaller and faster than XML and parses directly into JS via JSON.parse()."
+                        ],
+                        examinerTrap: {
+                            q: "Can a valid JSON file contain functions or comments?",
+                            a: "No. JSON strictly forbids functions, comments, undefined, and single quotes."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "Ch 5: Node.js & Express Backend",
+                hours: "8 Hrs",
+                weightage: "CO-4 (20%) / 0-PYQ BLIND SPOT",
+                summary: "Node V8 Runtime, npm, Express routing, Middleware order, MongoDB/MySQL CRUD, Postman, and Auth.",
+                linkedLab: 4,
+                topics: [
+                    {
+                        id: "c5-t1",
+                        title: "Node.js Runtime, Event Loop & npm",
+                        priority: "BLINDSPOT",
+                        freq: "0x PYQ - High Alert",
+                        analogyPoints: [
+                            "Node.js takes Chrome's V8 engine out of the browser so JS can run on servers.",
+                            "npm is the App Store to install backend packages like express and mongoose."
+                        ],
+                        howItWorks: [
+                            "Node.js is a C++ & V8 JavaScript runtime environment (not a language or framework).",
+                            "Uses Single-Threaded, Non-Blocking, Event-Driven I/O architecture.",
+                            "Handles thousands of concurrent requests by offloading DB/file tasks to background workers.",
+                            "npm (Node Package Manager) tracks project libraries inside package.json."
+                        ],
+                        codeSnippet: `const http = require('http');
+http.createServer((req, res) => {
+  res.end("Hello from Node.js!");
+}).listen(5000);`,
+                        vivaPoints: [
+                            "Node.js is a server-side JS runtime built on Chrome's V8 engine.",
+                            "It uses a single-threaded, non-blocking event loop to handle high concurrency without thread overhead."
+                        ],
+                        examinerTrap: {
+                            q: "If Node.js has only 1 main thread, how does it handle 1000 database queries at once?",
+                            a: "It offloads slow I/O tasks to the background libuv thread pool and keeps the main thread free."
+                        }
+                    },
+                    {
+                        id: "c5-t2",
+                        title: "Express.js Routing & Middleware (req, res, next)",
+                        priority: "BLINDSPOT",
+                        freq: "0x PYQ - Guaranteed 7M",
+                        analogyPoints: [
+                            "Middleware functions are security gates that run in strict top-to-bottom order.",
+                            "Each gate must call next() to open the door to the next gate, or send an error."
+                        ],
+                        howItWorks: [
+                            "Middleware is a function with (req, res, next) parameters.",
+                            "Runs between receiving the request and sending the response.",
+                            "Executes in the exact top-to-bottom order written in code.",
+                            "express.json() is built-in middleware to parse incoming JSON request bodies.",
+                            "Must call next() to continue, or res.send()/res.json() to stop the cycle."
+                        ],
+                        codeSnippet: `const express = require('express');
+const app = express();
+app.use(express.json()); // 1. Parse JSON body
+
+const auth = (req, res, next) => {
+  if (req.headers.token === "123") next(); // 2. Pass forward
+  else res.status(401).json({ err: "Denied" });
+};
+
+app.get('/data', auth, (req, res) => res.json({ ok: true }));`,
+                        vivaPoints: [
+                            "Middleware functions receive (req, res, next) and execute in strict top-to-bottom order.",
+                            "They log requests, parse JSON, or verify auth before calling next() to reach the route handler."
+                        ],
+                        examinerTrap: {
+                            q: "What happens if a middleware neither calls next() nor sends a response?",
+                            a: "The client HTTP request hangs forever and eventually times out."
+                        }
+                    },
+                    {
+                        id: "c5-t3",
+                        title: "MongoDB (Mongoose) / MySQL CRUD API in Node",
+                        priority: "BLINDSPOT",
+                        freq: "0x PYQ - Code Question",
+                        analogyPoints: [
+                            "Mongoose is a translator between Express objects and MongoDB collections.",
+                            "Each CRUD route awaits the database operation before returning JSON."
+                        ],
+                        howItWorks: [
+                            "mongoose.connect(uri) opens connection to MongoDB.",
+                            "Schema defines field types; Model provides CRUD functions.",
+                            "Create: await Model.create(req.body) -> POST.",
+                            "Read: await Model.find() -> GET.",
+                            "Update & Delete: findByIdAndUpdate(id, body) and findByIdAndDelete(id)."
+                        ],
+                        codeSnippet: `const User = mongoose.model('User', { name: String });
+
+app.post('/users', async (req, res) => {
+  const u = await User.create(req.body);
+  res.status(201).json(u);
+});
+app.get('/users', async (req, res) => {
+  res.json(await User.find());
+});`,
+                        vivaPoints: [
+                            "Express connects to MongoDB via Mongoose ODM to run async CRUD operations.",
+                            "POST uses create(), GET uses find(), PUT uses findByIdAndUpdate(), and DELETE uses findByIdAndDelete()."
+                        ],
+                        examinerTrap: {
+                            q: "What is the main difference between MySQL and MongoDB?",
+                            a: "MySQL stores data in fixed relational tables/rows; MongoDB stores flexible JSON-like documents."
+                        }
+                    },
+                    {
+                        id: "c5-t4",
+                        title: "Authentication vs Authorization & Postman",
+                        priority: "BLINDSPOT",
+                        freq: "0x PYQ - 3/4M Short Note",
+                        analogyPoints: [
+                            "Authentication checks your ID card at the gate (Who are you?).",
+                            "Authorization checks if your ID is allowed inside the Server Room (What can you do?)."
+                        ],
+                        howItWorks: [
+                            "Authentication (AuthN): Verifies user identity via password or JWT token (Fails with 401).",
+                            "Authorization (AuthZ): Verifies user permissions/role like Admin vs Student (Fails with 403).",
+                            "Postman: API testing tool to send GET, POST, PUT, DELETE requests without building a frontend.",
+                            "Postman allows setting custom Headers (Bearer Token) and raw JSON bodies."
+                        ],
+                        codeSnippet: `AuthN Failure -> 401 Unauthorized (Not logged in)
+AuthZ Failure -> 403 Forbidden    (Logged in, but not Admin)`,
+                        vivaPoints: [
+                            "Authentication verifies identity (who you are), while Authorization checks permissions (what you can access).",
+                            "Postman tests backend REST APIs by sending custom HTTP methods, headers, and JSON payloads."
+                        ],
+                        examinerTrap: {
+                            q: "Why can't you test a POST or DELETE route directly in Chrome's URL bar?",
+                            a: "Because typing a URL in a browser address bar only sends GET requests."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 6,
+                title: "Ch 6: React.js Frontend",
+                hours: "7 Hrs",
+                weightage: "CO-5 (20%) / 0-PYQ BLIND SPOT",
+                summary: "Virtual DOM vs Real DOM, JSX, Props vs State, useState, useEffect, Lists/Keys, and CORS.",
+                linkedLab: 5,
+                topics: [
+                    {
+                        id: "c6-t1",
+                        title: "Real DOM vs React Virtual DOM",
+                        priority: "BLINDSPOT",
+                        freq: "0x PYQ - #1 React Topic",
+                        analogyPoints: [
+                            "Real DOM rebuilds the whole room just to change one lightbulb.",
+                            "Virtual DOM compares blueprints (Diffing) and replaces only that one bulb."
+                        ],
+                        howItWorks: [
+                            "Virtual DOM is a fast, lightweight JS object copy of the Real DOM in memory.",
+                            "When state changes, React builds a new Virtual DOM tree.",
+                            "Diffing: React compares the new Virtual DOM with the old snapshot.",
+                            "Reconciliation: React updates ONLY the changed node in the browser Real DOM."
+                        ],
+                        codeSnippet: `State Change -> New VDOM -> Diffing -> Patch 1 Node in Real DOM`,
+                        vivaPoints: [
+                            "Virtual DOM is an in-memory JS copy of the Real DOM.",
+                            "React diffs the new Virtual DOM against the old one and updates only changed nodes (Reconciliation)."
+                        ],
+                        examinerTrap: {
+                            q: "Does React update the Real DOM immediately on every variable change?",
+                            a: "No. It batches state updates and patches only the diffed nodes."
+                        }
+                    },
+                    {
+                        id: "c6-t2",
+                        title: "JSX, Functional Components & Props vs State",
+                        priority: "BLINDSPOT",
+                        freq: "0x PYQ - 7M Candidate",
+                        analogyPoints: [
+                            "Props are arguments passed down from Parent to Child (Read-Only).",
+                            "State is the component's own private memory that can change (Mutable)."
+                        ],
+                        howItWorks: [
+                            "JSX lets us write HTML inside JS; uses className instead of class and {} for JS expressions.",
+                            "JSX must return a single root parent tag (like <div> or <>...</>).",
+                            "Props: Passed from parent to child, immutable (child cannot modify props).",
+                            "State: Managed inside component via useState; updating state triggers re-render."
+                        ],
+                        codeSnippet: `function Counter({ title }) { // 'title' is a Prop
+  const [count, setCount] = useState(0); // 'count' is State
+  return <button onClick={() => setCount(count + 1)}>{title}: {count}</button>;
+}`,
+                        vivaPoints: [
+                            "Props are read-only inputs passed from parent to child; State is mutable internal data.",
+                            "Calling the useState setter function triggers an automatic component re-render."
+                        ],
+                        examinerTrap: {
+                            q: "Why does 'count = count + 1' not update the React screen?",
+                            a: "Direct variable changes do not trigger React re-renders; you must call setCount()."
+                        }
+                    },
+                    {
+                        id: "c6-t3",
+                        title: "useEffect Hook, API Calls & List Keys",
+                        priority: "BLINDSPOT",
+                        freq: "0x PYQ - 7M Code",
+                        analogyPoints: [
+                            "useEffect is an automatic trigger that runs code when a component loads or updates.",
+                            "An empty array [] tells it to run ONLY ONCE when the page first opens."
+                        ],
+                        howItWorks: [
+                            "useEffect(fn, [deps]) runs side effects like API calls or timers.",
+                            "No array: runs after every render.",
+                            "Empty array []: runs ONLY ONCE on mount (like componentDidMount).",
+                            "[id] array: runs on mount and whenever 'id' changes.",
+                            "When rendering arrays with .map(), each item needs a unique 'key' prop for fast VDOM diffing."
+                        ],
+                        codeSnippet: `useEffect(() => {
+  fetch('/api/items').then(r => r.json()).then(setItems);
+}, []); // [] = Run once on mount`,
+                        vivaPoints: [
+                            "useEffect handles side effects like fetching APIs in functional components.",
+                            "Passing an empty dependency array [] runs the effect only once when the component mounts."
+                        ],
+                        examinerTrap: {
+                            q: "What happens if you call setItems() inside useEffect without []?",
+                            a: "It creates an infinite re-render loop of API calls."
+                        }
+                    },
+                    {
+                        id: "c6-t4",
+                        title: "CORS (Cross-Origin Resource Sharing)",
+                        priority: "IMP",
+                        freq: "2x PYQ + Ch 6 Topic",
+                        analogyPoints: [
+                            "Browser blocks React (port 3000) from reading Node (port 5000) by default.",
+                            "Node must send a VIP pass header (Access-Control-Allow-Origin) to allow it."
+                        ],
+                        howItWorks: [
+                            "Origin = Protocol (http) + Domain (localhost) + Port (:3000).",
+                            "If React (:3000) calls Express (:5000), ports differ, so it is Cross-Origin.",
+                            "Browser blocks the response unless the server sends CORS headers.",
+                            "Fixed on the Express backend using app.use(cors())."
+                        ],
+                        codeSnippet: `// Fix inside Node/Express Backend:
+const cors = require('cors');
+app.use(cors({ origin: 'http://localhost:3000' }));`,
+                        vivaPoints: [
+                            "CORS is a browser security mechanism that blocks requests between different origins (domain, protocol, or port).",
+                            "It is fixed on the backend server by sending the Access-Control-Allow-Origin header."
+                        ],
+                        examinerTrap: {
+                            q: "Can you fix a CORS error by changing code inside React?",
+                            a: "No. CORS must be enabled on the backend server sending the response headers."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 7,
+                title: "Ch 7: Deployment & Cloud",
+                hours: "3 Hrs",
+                weightage: "CO-5 (20%) / 0-PYQ BLIND SPOT",
+                summary: "SEO & Meta Tags, Domain & DNS, Web Hosting, CAPTCHA, and Cloud Models (IaaS, PaaS, SaaS).",
+                linkedLab: 5,
+                topics: [
+                    {
+                        id: "c7-t1",
+                        title: "SEO & HTML Meta Tags",
+                        priority: "IMP",
+                        freq: "3x PYQ + Ch 7 Topic",
+                        analogyPoints: [
+                            "Meta tags are the index card on a library book that tells Google what your page is about."
+                        ],
+                        howItWorks: [
+                            "SEO (Search Engine Optimization) improves website ranking on Google.",
+                            "<meta> tags sit inside <head> and are invisible on the page.",
+                            "charset='UTF-8' sets character encoding; viewport enables mobile responsiveness.",
+                            "description sets the summary shown in Google search results.",
+                            "robots='index, follow' tells search crawlers to index the page."
+                        ],
+                        codeSnippet: `<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GTU Sem 5 Study Guide">
+  <meta name="robots" content="index, follow">
+</head>`,
+                        vivaPoints: [
+                            "SEO improves search engine rankings using semantic HTML, fast load times, and meta tags.",
+                            "Meta tags inside head provide page description, viewport scaling, and crawler rules."
+                        ],
+                        examinerTrap: {
+                            q: "Does the <meta> tag need a closing </meta> tag?",
+                            a: "No. It is a self-closing (void) HTML tag."
+                        }
+                    },
+                    {
+                        id: "c7-t2",
+                        title: "Hosting, DNS, CAPTCHA & Cloud (IaaS, PaaS, SaaS)",
+                        priority: "BLINDSPOT",
+                        freq: "0x PYQ - Ch 7 Blind Spot",
+                        analogyPoints: [
+                            "DNS is the internet phonebook that turns gtu.ac.in into an IP address.",
+                            "IaaS rents raw server hardware; PaaS runs your code; SaaS is ready software like Gmail."
+                        ],
+                        howItWorks: [
+                            "DNS (Domain Name System): Translates domain names into IP addresses (A Record).",
+                            "Web Hosting: Stores website files on a 24/7 server (Shared, VPS, or Cloud).",
+                            "CAPTCHA: Turing test that blocks automated spam bots from submitting forms.",
+                            "IaaS (Infrastructure): Rent virtual machines (AWS EC2).",
+                            "PaaS (Platform): Deploy code directly via Git (Vercel, Render). SaaS (Software): End-user apps (Gmail)."
+                        ],
+                        codeSnippet: `IaaS : Manage OS + Runtime + Code (AWS EC2)
+PaaS : Manage ONLY Code           (Vercel, Render)
+SaaS : Just use the app           (Gmail, Notion)`,
+                        vivaPoints: [
+                            "DNS translates domain names to IP addresses, and CAPTCHA blocks automated bots.",
+                            "Cloud offers IaaS for virtual hardware, PaaS for code deployment, and SaaS for ready-to-use apps."
+                        ],
+                        examinerTrap: {
+                            q: "Which cloud model are Vercel and Render?",
+                            a: "PaaS (Platform as a Service), because you only push code and they manage the server OS."
+                        }
+                    }
+                ]
+            }
+        ];
+
+        let currentChapterId = 1;
+        let currentPriorityFilter = 'ALL';
+        let masteredTopics = new Set();
+        let vivaFlatDeck = [];
+        let currentVivaIndex = 0;
+
+        function buildFlatVivaDeck() {
+            vivaFlatDeck = [];
+            chaptersData.forEach(ch => {
+                ch.topics.forEach(t => {
+                    vivaFlatDeck.push({ ...t, chapterId: ch.id, chapterTitle: ch.title });
+                });
+            });
+        }
+
+        function getPriorityBadgeHtml(priority, freq) {
+            if (priority === 'M.IMP') {
+                return `<span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">M.IMP • ${freq}</span>`;
+            }
+            if (priority === 'BLINDSPOT') {
+                return `<span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-ochre-500/20 text-ochre-400 border border-ochre-500/50">0-PYQ BLIND SPOT • ${freq}</span>`;
+            }
+            return `<span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/40">IMP • ${freq}</span>`;
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('chapterListContainer');
+            container.innerHTML = chaptersData.map(ch => {
+                const isSelected = ch.id === currentChapterId && currentPriorityFilter === 'ALL';
+                const isBlindSpot = ch.id >= 5;
+                return `
+                    <button onclick="selectChapter(${ch.id})" class="w-full text-left p-2.5 rounded-lg border transition-all flex items-center justify-between ${
+                        isSelected
+                            ? 'bg-carbon-800 border-lime-350 text-white'
+                            : 'bg-carbon-950/40 border-carbon-800 text-neutral-400 hover:bg-carbon-850 hover:text-neutral-200'
+                    }">
+                        <div class="min-w-0">
+                            <div class="font-bold text-xs truncate ${isSelected ? 'text-lime-350' : ''}">${ch.title}</div>
+                            <div class="flex items-center gap-2 mt-1 font-mono text-[10px]">
+                                <span>${ch.hours}</span>
+                                ${isBlindSpot ? `<span class="text-ochre-400">• 0-PYQ</span>` : `<span>• ${ch.topics.length} Topics</span>`}
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-angle-right text-xs ${isSelected ? 'text-lime-350' : 'text-carbon-700'}"></i>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderChapterView() {
+            const chapter = chaptersData.find(c => c.id === currentChapterId);
+            const headerCard = document.getElementById('chapterHeaderCard');
+
+            headerCard.innerHTML = `
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 font-mono text-xs text-lime-350">
+                            <span>MODULE 0${chapter.id}</span>
+                            <span>/</span>
+                            <span>${chapter.hours}</span>
+                            <span>/</span>
+                            <span>${chapter.weightage}</span>
+                        </div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-white mt-1">${chapter.title}</h1>
+                        <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">${chapter.summary}</p>
+                    </div>
+                    <button onclick="openSpecificLab(${chapter.linkedLab})" class="px-4 py-2 rounded-lg bg-lime-350 hover:bg-lime-450 text-carbon-950 font-mono font-bold text-xs uppercase">
+                        Open Lab #${chapter.linkedLab}
+                    </button>
+                </div>
+            `;
+
+            let topicsToDisplay = [];
+            if (currentPriorityFilter === 'ALL') {
+                topicsToDisplay = chapter.topics;
+            } else {
+                chaptersData.forEach(ch => {
+                    ch.topics.forEach(t => {
+                        if (t.priority === currentPriorityFilter) {
+                            topicsToDisplay.push({ ...t, chapterLabel: `Ch ${ch.id}` });
+                        }
+                    });
+                });
+            }
+
+            const topicsContainer = document.getElementById('topicsContainer');
+            topicsContainer.innerHTML = topicsToDisplay.map((t, idx) => {
+                const isMastered = masteredTopics.has(t.id);
+                return `
+                    <article class="rounded-xl bg-carbon-900 border ${isMastered ? 'border-lime-350/60' : 'border-carbon-800'} overflow-hidden">
+                        <div class="px-4 py-3 bg-carbon-950 border-b border-carbon-800 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-mono text-xs font-bold text-lime-350">0${idx + 1}.</span>
+                                <h2 class="text-base font-bold text-white">${t.title}</h2>
+                                ${t.chapterLabel ? `<span class="text-[11px] font-mono px-2 py-0.5 rounded bg-carbon-800 text-neutral-300">${t.chapterLabel}</span>` : ''}
+                                ${getPriorityBadgeHtml(t.priority, t.freq)}
+                            </div>
+                            <button onclick="toggleTopicMastered('${t.id}')" class="px-3 py-1 rounded text-xs font-mono font-bold border transition-all ${
+                                isMastered
+                                    ? 'bg-lime-350 text-carbon-950 border-lime-350'
+                                    : 'bg-carbon-850 text-neutral-300 border-carbon-700 hover:border-neutral-500'
+                            }">
+                                ${isMastered ? '✓ DONE' : 'MARK DONE'}
+                            </button>
+                        </div>
+
+                        <div class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <!-- Col 1: Analogy + Viva Pointers -->
+                            <div class="space-y-3">
+                                <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-3.5">
+                                    <div class="text-[11px] font-mono font-bold uppercase text-amber-300 mb-2">1. Simple Analogy</div>
+                                    <ul class="space-y-1.5 text-xs sm:text-sm text-neutral-200">
+                                        ${t.analogyPoints.map(p => `<li class="flex items-start gap-2"><span class="text-amber-300 font-mono">•</span><span>${p}</span></li>`).join('')}
+                                    </ul>
+                                </div>
+
+                                <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-3.5">
+                                    <div class="text-[11px] font-mono font-bold uppercase text-lime-350 mb-2">3. Viva Answer Pointers</div>
+                                    <ul class="space-y-1.5 text-xs sm:text-sm text-white">
+                                        ${t.vivaPoints.map(p => `<li class="flex items-start gap-2"><span class="text-lime-350 font-mono">▸</span><span>${p}</span></li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Col 2: Exam Key Pointers -->
+                            <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-3.5 flex flex-col justify-between">
+                                <div>
+                                    <div class="text-[11px] font-mono font-bold uppercase text-teal-400 mb-2">2. Key Technical Pointers (Write in Exam)</div>
+                                    <ul class="space-y-2 text-xs sm:text-sm text-neutral-200">
+                                        ${t.howItWorks.map(step => `
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-teal-400 font-mono font-bold">•</span>
+                                                <span>${step}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Col 3: Code + Examiner Trap -->
+                            <div class="space-y-3 flex flex-col justify-between">
+                                <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-3 overflow-x-auto">
+                                    <div class="text-[10px] font-mono uppercase text-neutral-400 mb-1.5">Code / Syntax</div>
+                                    <pre class="text-[11px] font-mono text-lime-350 leading-relaxed"><code>${escapeHtml(t.codeSnippet)}</code></pre>
+                                </div>
+
+                                <div class="bg-carbon-950 border border-ochre-500/40 rounded-lg p-3">
+                                    <div class="text-[11px] font-mono font-bold uppercase text-ochre-400 mb-1">Examiner Counter-Question</div>
+                                    <p class="text-xs font-semibold text-white">Q: ${t.examinerTrap.q}</p>
+                                    <p class="text-xs text-neutral-300 mt-1"><span class="text-lime-350 font-mono font-bold">Ans:</span> ${t.examinerTrap.a}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function selectChapter(id) {
+            currentChapterId = id;
+            currentPriorityFilter = 'ALL';
+            updateFilterButtonsUI();
+            switchMainView('chapters');
+            renderSidebar();
+            renderChapterView();
+            if (window.innerWidth < 1024) toggleMobileSidebar(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setPriorityFilter(filter) {
+            currentPriorityFilter = filter;
+            updateFilterButtonsUI();
+            switchMainView('chapters');
+            renderSidebar();
+            renderChapterView();
+        }
+
+        function updateFilterButtonsUI() {
+            ['ALL', 'M.IMP', 'BLINDSPOT', 'IMP'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === currentPriorityFilter) {
+                    btn.className = "px-2 py-1.5 rounded text-[11px] font-mono font-bold bg-lime-350 text-carbon-950 text-center";
+                } else {
+                    btn.className = "px-2 py-1.5 rounded text-[11px] font-mono font-bold bg-carbon-850 text-neutral-300 border border-carbon-700 text-center hover:bg-carbon-800";
+                }
+            });
+            const labelMap = { 'ALL': 'Current Ch', 'M.IMP': 'All M.IMP', 'BLINDSPOT': 'All 0-PYQ', 'IMP': 'All IMP' };
+            document.getElementById('activeFilterLabel').innerText = labelMap[currentPriorityFilter];
+        }
+
+        function toggleTopicMastered(topicId) {
+            if (masteredTopics.has(topicId)) masteredTopics.delete(topicId);
+            else masteredTopics.add(topicId);
+            updateMasteryProgressUI();
+            renderChapterView();
+            if (!document.getElementById('view-viva').classList.contains('hidden')) renderVivaCard();
+        }
+
+        function updateMasteryProgressUI() {
+            const total = vivaFlatDeck.length;
+            const count = masteredTopics.size;
+            const pct = Math.round((count / total) * 100);
+            document.getElementById('masteredCountBadge').innerText = `${count} / ${total}`;
+            document.getElementById('masteredProgressBar').style.width = `${pct}%`;
+        }
+
+        function switchMainView(viewName) {
+            ['chapters', 'labs', 'viva'].forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const btn = document.getElementById(`tabBtn-${v}`);
+                if (v === viewName) {
+                    el.classList.remove('hidden');
+                    btn.className = "px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-lime-350 text-carbon-950";
+                } else {
+                    el.classList.add('hidden');
+                    btn.className = "px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-neutral-400 hover:text-white";
+                }
+            });
+            if (viewName === 'viva') renderVivaCard();
+        }
+
+        function openSpecificLab(labNumber) {
+            switchMainView('labs');
+            selectLabTab(labNumber);
+            if (window.innerWidth < 1024) toggleMobileSidebar(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectLabTab(labNum) {
+            for (let i = 1; i <= 5; i++) {
+                const panel = document.getElementById(`labPanel-${i}`);
+                const tabBtn = document.getElementById(`labTabBtn-${i}`);
+                if (i === labNum) {
+                    panel.classList.remove('hidden');
+                    tabBtn.className = "p-3 rounded-lg border text-left transition-all bg-lime-350 text-carbon-950 border-lime-350";
+                } else {
+                    panel.classList.add('hidden');
+                    tabBtn.className = "p-3 rounded-lg border text-left transition-all bg-carbon-850 border-carbon-800 text-neutral-400 hover:text-white";
+                }
+            }
+        }
+
+        function toggleMobileSidebar(forceState) {
+            const sidebar = document.getElementById('sidebarNav');
+            const backdrop = document.getElementById('mobileBackdrop');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+            const shouldOpen = typeof forceState === 'boolean' ? forceState : isHidden;
+            if (shouldOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        let currentHttpVerb = 'GET';
+
+        function configureHttpLab(verb) {
+            currentHttpVerb = verb;
+            ['GET', 'POST', 'PUT', 'DELETE'].forEach(v => {
+                const btn = document.getElementById(`httpVerb-${v}`);
+                if (v === verb) {
+                    btn.className = "py-2 px-3 rounded font-mono text-xs font-bold bg-lime-350 text-carbon-950";
+                } else {
+                    btn.className = "py-2 px-3 rounded font-mono text-xs font-bold bg-carbon-850 text-neutral-300 border border-carbon-700";
+                }
+            });
+            updateHttpPreview();
+        }
+
+        function updateHttpPreview() {
+            const scenario = document.getElementById('httpScenarioSelect').value;
+            const urlPreview = document.getElementById('httpUrlPreview');
+            const dataLocBadge = document.getElementById('httpDataLocationBadge');
+            const reqInspector = document.getElementById('httpRequestInspector');
+            const resInspector = document.getElementById('httpResponseInspector');
+            const statusBadge = document.getElementById('httpStatusBadge');
+
+            let endpoint = '/api/students?sem=5';
+            let dataLocation = 'Data: URL Query (req.query)';
+            let bodyPayload = '// No Body in GET or DELETE';
+
+            if (currentHttpVerb === 'POST') {
+                endpoint = '/api/students';
+                dataLocation = 'Data: Request Body (req.body)';
+                bodyPayload = scenario === 'bad_request'
+                    ? '{\n  "name": ""\n}'
+                    : '{\n  "name": "Aarav",\n  "sem": 5\n}';
+            } else if (currentHttpVerb === 'PUT') {
+                endpoint = '/api/students/42';
+                dataLocation = 'Data: URL ID + Request Body';
+                bodyPayload = '{\n  "sem": 6\n}';
+            } else if (currentHttpVerb === 'DELETE') {
+                endpoint = '/api/students/42';
+                dataLocation = 'Data: URL Route Param (:id)';
+            }
+
+            urlPreview.innerText = `${currentHttpVerb} ${endpoint}`;
+            dataLocBadge.innerText = dataLocation;
+
+            const authHeader = scenario === 'unauthorized' ? 'Authorization: INVALID' : 'Authorization: Bearer jwt_ok';
+            reqInspector.innerText = `${currentHttpVerb} ${endpoint} HTTP/1.1\n${authHeader}\nContent-Type: application/json\n\n${bodyPayload}`;
+
+            let statusText = '200 OK';
+            let resJson = { status: 200, ok: true };
+
+            if (scenario === 'success') {
+                if (currentHttpVerb === 'POST') {
+                    statusText = '201 Created';
+                    resJson = { status: 201, msg: "Created in DB" };
+                }
+            } else if (scenario === 'bad_request') {
+                statusText = '400 Bad Request';
+                resJson = { status: 400, err: "Missing required field" };
+            } else if (scenario === 'unauthorized') {
+                statusText = '401 Unauthorized';
+                resJson = { status: 401, err: "Invalid JWT token" };
+            } else if (scenario === 'not_found') {
+                statusText = '404 Not Found';
+                resJson = { status: 404, err: "ID not found" };
+            } else if (scenario === 'server_crash') {
+                statusText = '500 Server Error';
+                resJson = { status: 500, err: "DB crashed" };
+            }
+
+            statusBadge.innerText = statusText;
+            resInspector.innerText = JSON.stringify(resJson, null, 2);
+        }
+
+        function fireHttpPacket() {
+            const packet = document.getElementById('httpAnimatedPacket');
+            const wireText = document.getElementById('httpWireStatusText');
+            const serverText = document.getElementById('httpServerActionText');
+            const statusBadge = document.getElementById('httpStatusBadge');
+
+            packet.classList.remove('hidden', 'animate-packet-req', 'animate-packet-res');
+            packet.className = "absolute top-1 px-3 py-1 rounded text-xs font-mono font-bold z-20 bg-teal-400 text-carbon-950 animate-packet-req";
+            packet.innerText = `${currentHttpVerb} ->`;
+            wireText.innerText = "Sending request...";
+            serverText.innerText = "Processing...";
+
+            setTimeout(() => {
+                packet.classList.remove('animate-packet-req');
+                packet.className = "absolute top-1 px-3 py-1 rounded text-xs font-mono font-bold z-20 bg-lime-350 text-carbon-950 animate-packet-res";
+                packet.innerText = `<- ${statusBadge.innerText}`;
+                wireText.innerText = "Returning response...";
+                serverText.innerText = statusBadge.innerText;
+            }, 1200);
+
+            setTimeout(() => {
+                packet.classList.add('hidden');
+                wireText.innerText = `Done: ${statusBadge.innerText}`;
+            }, 2400);
+        }
+
+        function updateCssPlayground() {
+            const justify = document.getElementById('flexJustify').value;
+            const align = document.getElementById('flexAlign').value;
+            const posMode = document.getElementById('box2Position').value;
+
+            const stage = document.getElementById('cssFlexStage');
+            const box2 = document.getElementById('cssBox2');
+            const badge = document.getElementById('box2Badge');
+            const explain = document.getElementById('positionExplanation');
+            const ruleText = document.getElementById('cssActiveRuleText');
+
+            stage.style.justifyContent = justify;
+            stage.style.alignItems = align;
+            ruleText.innerText = `justify-content: ${justify}; align-items: ${align};`;
+
+            box2.style.position = posMode;
+            if (posMode === 'static') {
+                box2.style.top = ''; box2.style.left = ''; box2.style.right = '';
+                badge.innerText = 'static';
+                explain.innerText = '• static: Sits in normal flex flow.';
+            } else if (posMode === 'relative') {
+                box2.style.top = '-16px'; box2.style.left = '18px'; box2.style.right = '';
+                badge.innerText = 'relative';
+                explain.innerText = '• relative: Moves from its own spot; original space stays reserved.';
+            } else if (posMode === 'absolute') {
+                box2.style.top = '8px'; box2.style.right = '8px'; box2.style.left = '';
+                badge.innerText = 'absolute';
+                explain.innerText = '• absolute: Removed from normal flow; pinned to top-right of relative parent.';
+            }
+        }
+
+        function calculateSpecificityWinner() {
+            const hasTag = document.getElementById('specTag').checked;
+            const hasClass = document.getElementById('specClass').checked;
+            const hasId = document.getElementById('specId').checked;
+            const hasInline = document.getElementById('specInline').checked;
+
+            const btn = document.getElementById('specTargetBtn');
+            const explain = document.getElementById('specWinnerExplanation');
+
+            if (hasInline) {
+                btn.className = "px-4 py-2 rounded font-mono text-xs font-bold bg-red-500 text-white";
+                explain.innerText = "Winner: Inline Style (1000 pts)";
+            } else if (hasId) {
+                btn.className = "px-4 py-2 rounded font-mono text-xs font-bold bg-ochre-500 text-carbon-950";
+                explain.innerText = "Winner: #sub ID (100 pts)";
+            } else if (hasClass) {
+                btn.className = "px-4 py-2 rounded font-mono text-xs font-bold bg-lime-350 text-carbon-950";
+                explain.innerText = "Winner: .btn Class (10 pts)";
+            } else if (hasTag) {
+                btn.className = "px-4 py-2 rounded font-mono text-xs font-bold bg-teal-400 text-carbon-950";
+                explain.innerText = "Winner: button Tag (1 pt)";
+            } else {
+                btn.className = "px-4 py-2 rounded font-mono text-xs font-bold bg-carbon-800 text-neutral-400";
+                explain.innerText = "Winner: None";
+            }
+        }
+
+        function runLiveRegexLab() {
+            const emailOk = /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(document.getElementById('regexEmailInput').value);
+            const mobileOk = /^[6-9]\d{9}$/.test(document.getElementById('regexMobileInput').value);
+            const passOk = /^(?=.*\d)(?=.*[@#$!%*?&]).{6,16}$/.test(document.getElementById('regexPassInput').value);
+
+            const setStatus = (id, ok) => {
+                const el = document.getElementById(id);
+                el.innerText = ok ? 'VALID' : 'INVALID';
+                el.className = `absolute right-2.5 top-1.5 text-xs font-mono font-bold ${ok ? 'text-lime-350' : 'text-red-400'}`;
+            };
+            setStatus('regexEmailStatus', emailOk);
+            setStatus('regexMobileStatus', mobileOk);
+            setStatus('regexPassStatus', passOk);
+        }
+
+        function simulateEventLoop(mode) {
+            const stack = document.getElementById('loopCallStack');
+            const webApi = document.getElementById('loopWebApi');
+            const queue = document.getElementById('loopQueue');
+            const log = document.getElementById('loopConsoleOutput');
+
+            if (mode === 'sync') {
+                stack.innerText = "BLOCKED (2s)";
+                webApi.innerText = "Empty";
+                queue.innerText = "Empty";
+                log.innerHTML = `<div>• 1. Start</div><div class="text-red-400">• 2. UI Frozen waiting for sync task...</div>`;
+                setTimeout(() => {
+                    stack.innerText = "Idle";
+                    log.innerHTML += `<div class="text-lime-350">• 3. Done (Unfrozen)</div>`;
+                }, 1200);
+            } else {
+                stack.innerText = "Runs Next Line";
+                webApi.innerText = "fetch() running";
+                log.innerHTML = `<div>• 1. Start</div><div class="text-teal-400">• 2. fetch() sent to Web API (UI stays fast)</div><div>• 3. Next line ran immediately</div>`;
+                setTimeout(() => {
+                    webApi.innerText = "Empty";
+                    queue.innerText = ".then() ready";
+                }, 700);
+                setTimeout(() => {
+                    queue.innerText = "Empty";
+                    stack.innerText = "Idle";
+                    log.innerHTML += `<div class="text-lime-350">• 4. Promise resolved: Data shown</div>`;
+                }, 1400);
+            }
+        }
+
+        function runMiddlewarePipeline() {
+            const hasToken = document.getElementById('mwAuthToggle').checked;
+            const log = document.getElementById('mwConsoleLog');
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`mwStage-${i}`).className = "p-3 rounded-lg bg-carbon-950 border border-carbon-800";
+            }
+            const mark = (n, cls) => document.getElementById(`mwStage-${n}`).className = `p-3 rounded-lg border ${cls}`;
+
+            mark(1, 'border-lime-350 bg-carbon-900');
+            mark(2, 'border-lime-350 bg-carbon-900');
+            if (hasToken) {
+                mark(3, 'border-lime-350 bg-carbon-900');
+                mark(4, 'border-lime-350 bg-carbon-900');
+                mark(5, 'border-lime-350 bg-carbon-900');
+                log.innerHTML = `
+                    <div>• Step 1: express.json() parsed req.body -> called next()</div>
+                    <div>• Step 2: Logger logged request -> called next()</div>
+                    <div class="text-lime-350">• Step 3: Auth Guard verified JWT -> called next()</div>
+                    <div class="text-teal-400">• Step 4 & 5: Saved to MongoDB -> Returned 201 Created</div>
+                `;
+            } else {
+                mark(3, 'border-red-500 bg-red-950/20');
+                mark(5, 'border-red-500 bg-red-950/20');
+                log.innerHTML = `
+                    <div>• Step 1 & 2: Passed via next()</div>
+                    <div class="text-red-400">• Step 3 BLOCKED: No token! Sent 401 Unauthorized (Step 4 DB skipped)</div>
+                `;
+            }
+        }
+
+        let reactDemoCount = 0;
+        function triggerReactStateUpdate() {
+            reactDemoCount++;
+            document.querySelectorAll('.vdom-count-val').forEach(el => el.innerText = reactDemoCount);
+            document.querySelectorAll('.real-dom-node').forEach(node => {
+                node.classList.remove('dom-repaint-red');
+                void node.offsetWidth;
+                node.classList.add('dom-repaint-red');
+            });
+            const vdomNode = document.getElementById('vdomTargetNode');
+            vdomNode.classList.remove('dom-patch-green');
+            void vdomNode.offsetWidth;
+            vdomNode.classList.add('dom-patch-green');
+        }
+
+        function runCorsSimulation() {
+            const ok = document.getElementById('corsToggleCheckbox').checked;
+            const box = document.getElementById('corsConsoleBox');
+            if (!ok) {
+                box.className = "p-3.5 rounded border border-red-500/50 bg-red-950/20 font-mono text-xs space-y-1";
+                box.innerHTML = `
+                    <div class="text-red-400 font-bold">• BLOCKED BY CORS POLICY</div>
+                    <div class="text-neutral-300">• Missing Header: Access-Control-Allow-Origin</div>
+                `;
+            } else {
+                box.className = "p-3.5 rounded border border-lime-350/50 bg-carbon-900 font-mono text-xs space-y-1";
+                box.innerHTML = `
+                    <div class="text-lime-350 font-bold">• 200 OK : CORS ALLOWED</div>
+                    <div class="text-neutral-300">• Header Sent: Access-Control-Allow-Origin: http://localhost:3000</div>
+                `;
+            }
+        }
+
+        function renderVivaCard() {
+            const card = vivaFlatDeck[currentVivaIndex];
+            const isMastered = masteredTopics.has(card.id);
+            const container = document.getElementById('vivaCardContainer');
+
+            container.innerHTML = `
+                <div class="bg-carbon-900 border border-carbon-800 rounded-xl p-6 space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-carbon-800 pb-3">
+                        <span class="text-xs font-mono text-neutral-400">Card ${currentVivaIndex + 1} / ${vivaFlatDeck.length} • ${card.chapterTitle}</span>
+                        ${getPriorityBadgeHtml(card.priority, card.freq)}
+                    </div>
+
+                    <div>
+                        <div class="text-xs font-mono uppercase text-neutral-400">Question:</div>
+                        <h3 class="text-xl font-bold text-white mt-1">${card.title}</h3>
+                    </div>
+
+                    <div class="bg-carbon-950 border border-carbon-800 rounded-lg p-3.5">
+                        <div class="text-xs font-mono font-bold text-amber-300 uppercase mb-1.5">Analogy Hint:</div>
+                        <ul class="space-y-1 text-xs sm:text-sm text-neutral-300">
+                            ${card.analogyPoints.map(p => `<li>• ${p}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div id="vivaRevealBtnWrap">
+                        <button onclick="document.getElementById('vivaHiddenAnswer').classList.remove('hidden'); this.parentElement.classList.add('hidden');" class="w-full py-3 rounded-lg bg-lime-350 text-carbon-950 font-mono font-bold text-xs uppercase">
+                            Reveal Point-Wise Answer
+                        </button>
+                    </div>
+
+                    <div id="vivaHiddenAnswer" class="hidden space-y-4 pt-2 border-t border-carbon-800">
+                        <div class="bg-carbon-950 border border-lime-350/40 p-4 rounded-lg">
+                            <div class="text-xs font-mono font-bold text-lime-350 uppercase mb-2">Speak These Pointers:</div>
+                            <ul class="space-y-1.5 text-sm text-white">
+                                ${card.vivaPoints.map(p => `<li class="flex items-start gap-2"><span class="text-lime-350 font-mono">▸</span><span>${p}</span></li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="bg-carbon-950 border border-ochre-500/40 p-4 rounded-lg">
+                            <div class="text-xs font-mono font-bold text-ochre-400 uppercase mb-1">Examiner Trap:</div>
+                            <p class="text-xs font-bold text-white">Q: ${card.examinerTrap.q}</p>
+                            <p class="text-xs text-neutral-300 mt-1">Ans: ${card.examinerTrap.a}</p>
+                        </div>
+
+                        <div class="flex justify-between pt-1">
+                            <button onclick="toggleTopicMastered('${card.id}')" class="px-4 py-2 rounded font-mono text-xs font-bold ${isMastered ? 'bg-lime-350 text-carbon-950' : 'bg-carbon-800 text-white'}">
+                                ${isMastered ? '✓ Marked Done' : 'Mark Done'}
+                            </button>
+                            <button onclick="nextVivaCard()" class="px-4 py-2 rounded bg-carbon-800 hover:bg-carbon-700 text-white font-mono text-xs font-bold">
+                                Next Card ->
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function nextVivaCard() { currentVivaIndex = (currentVivaIndex + 1) % vivaFlatDeck.length; renderVivaCard(); }
+        function prevVivaCard() { currentVivaIndex = (currentVivaIndex - 1 + vivaFlatDeck.length) % vivaFlatDeck.length; renderVivaCard(); }
+        function randomVivaCard() { currentVivaIndex = Math.floor(Math.random() * vivaFlatDeck.length); renderVivaCard(); }
+
+        window.onload = function () {
+            buildFlatVivaDeck();
+            renderSidebar();
+            renderChapterView();
+            updateMasteryProgressUI();
+            updateHttpPreview();
+            runLiveRegexLab();
+            runCorsSimulation();
+        };
+    </script>
+</body>
+</html>
