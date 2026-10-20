@@ -308,6 +308,14 @@ a:hover{color:#fff}
 }
 
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B4YRC3S20V"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-B4YRC3S20V');
+</script>
 </head>
 <body>
 <div class="shell">
@@ -465,6 +473,14 @@ window.addEventListener('resize',()=>{
  }
 });
 $$('[data-scroll]').forEach(b=>b.addEventListener('click',()=>{document.getElementById(b.dataset.scroll).scrollIntoView({behavior:'smooth'});$$('.navbutton').forEach(x=>x.classList.toggle('active',x===b));if(mobileNav())closeNav();}));$$('[data-jump]').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.jump).scrollIntoView({behavior:'smooth'})));
+</script>
+<script>
+document.addEventListener('click', function (e) {
+  var a = e.target.closest('a[href$=".pdf"]');
+  if (a && typeof gtag === 'function') {
+    gtag('event', 'pdf_click', { file_name: a.getAttribute('href') });
+  }
+});
 </script>
 </body>
 </html>
