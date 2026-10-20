@@ -15,6 +15,14 @@ a.back{display:inline-block;margin-top:8px;color:#8b949e;font-size:14px;text-dec
 a.back:hover{color:#e6edf3}
 footer{margin-top:32px;color:#6e7681;font-size:13px}
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B4YRC3S20V"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-B4YRC3S20V');
+</script>
 </head>
 <body>
 <main>
@@ -27,5 +35,13 @@ footer{margin-top:32px;color:#6e7681;font-size:13px}
 <a class="back" href="../">&larr; All semesters</a>
 <footer>Compiled by Manthan</footer>
 </main>
+<script>
+document.addEventListener('click', function (e) {
+  var a = e.target.closest('a[href$=".pdf"]');
+  if (a && typeof gtag === 'function') {
+    gtag('event', 'pdf_click', { file_name: a.getAttribute('href') });
+  }
+});
+</script>
 </body>
 </html>
