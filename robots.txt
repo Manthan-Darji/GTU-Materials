@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://manthan-darji.github.io/GTU-Materials/sitemap.xml
